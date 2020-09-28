@@ -17,9 +17,13 @@ Future<void> showMaterialFilePicker({
   ValueChanged<Uint8List> onChanged,
 }) async {
   try {
-    File file = await FilePicker.getFile(type: fileType);
-    var data = file.readAsBytesSync();
-    if (onChanged != null && file != null) onChanged(data);
+    FilePickerResult result =
+        await FilePicker.platform.pickFiles(type: fileType);
+
+    if (result != null) {
+      var data = result.files.single.bytes;
+      if (onChanged != null && data != null) onChanged(data);
+    }
   } catch (error) {
     if (error.runtimeType is PlatformException) return; // user clicked twice
     if (error.runtimeType is NoSuchMethodError) return; // user canceled dialog
